@@ -1,0 +1,112 @@
+﻿@model List<PersonViewModel>
+
+@{
+    ViewData["Title"] = "Directory App Main Page";
+}
+
+
+
+<div id="modalPlaceHolder" aria-hidden="true"></div>
+
+
+
+<div class="row">
+    <div class="col-md-12">
+
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Persons</h5>
+
+
+                <a asp-controller="Home" asp-action="Create" class="btn btn-primary mb-3">Add New</a>
+
+                <a asp-controller="Home" asp-action="GenerateReport" class="btn btn-success mb-3" style="margin-left:10px;">Generate Report</a>
+
+
+
+                @if (Model.Any())
+                {
+                    <table class="table table-striped table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Id</th>
+                                <th>First Name</th>
+                                <th>Last Name</th>
+                                <th>Company</th>
+                                <th>Information Action</th>
+                                <th></th>
+                                <th></th>
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+
+                                    <td>@item.PersonId</td>
+                                    <td>@item.FirstName</td>
+                                    <td>@item.LastName</td>
+                                    <td>@item.Company</td>
+                                    <td>
+                                        <select class="form-control drpInformationActions">
+                                            <option value="0">Select information type</option>
+                                            <option value="1">Add Location</option>
+                                            <option value="2">Add Mail</option>
+                                            <option value="3">Add Phone Number</option>
+                                        </select>
+
+                                    </td>
+                                    <td> <a asp-controller="Home" asp-action="Delete" asp-route-id="@item.PersonId" class="btn btn-danger btn-sm">Delete</a></td>
+                                    <td><a asp-controller="Home" asp-action="Update" asp-route-id="@item.PersonId" class="btn btn-success btn-sm">Detail</a></td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        Record not found
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+
+    <script>
+        $(function () {
+            $('.drpInformationActions').change(function () {
+                var selectedInformationType = parseInt(this.value);
+                if (parseInt(selectedInformationType) != 0) {
+                    var personId = $(this).closest('tr').find('td:first').text();
+                    const url = '/ContactInformation/Add';
+                    $.ajax({
+                        type: 'GET',
+                        url: url,
+                        data: { informationTypeId: selectedInformationType, personId: personId },
+                        success: function (data) {
+                            var placeHolderDiv = $('#modalPlaceHolder');
+                            placeHolderDiv.html(data);
+                            placeHolderDiv.find(".modal").modal('show');
+
+                        }
+                    });
+
+
+
+                }
+
+
+            });
+
+        });
+
+
+
+    </script>
+}

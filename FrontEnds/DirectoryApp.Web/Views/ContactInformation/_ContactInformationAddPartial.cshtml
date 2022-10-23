@@ -1,0 +1,52 @@
+﻿@model ContactInformationAddViewModel
+
+
+
+<form method="post" asp-controller="ContactInformation" asp-action="Add">
+    <div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title"><span class="fas fa-plus"></span>Add Contact Information</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="İptal">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <input name="IsValid" value="@ViewData.ModelState.IsValid.ToString()" type="hidden" />
+
+                    <input type="hidden" asp-for="@Model.PersonId" />
+                    <input type="hidden" asp-for="@Model.ContactType">
+                    <input type="hidden" asp-for="@Model.InformationTypeId" />
+                    @{
+                        if (@Model.InformationTypeId == 1)
+                        {
+                            <label>City :</label>
+                            <select asp-for="@Model.SelectedCity" asp-items="@Model.Cities.OrderBy(x=>x.Text)" class="form-control">
+                            </select>
+                        }
+                        else
+                        {
+                            <label>Value :</label>
+                            <input asp-for="@Model.ContactValue" class="form-control" />
+                            <span class="text-danger" asp-validation-for="ContactValue"></span>
+
+                        }
+
+                    }
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<script src="~/lib/jquery/dist/jquery.js"></script>
+<script src="~/lib/jquery-validation/dist/jquery.validate.js"></script>
+<script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.js"></script>
