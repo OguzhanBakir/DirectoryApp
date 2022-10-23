@@ -16,5 +16,7 @@ namespace DirectoryApp.Services.CrudOperations.Services
         Task<Response<NoContent>> Save(ContactInformation information);
         Task<Response<NoContent>> Update(ContactInformation information);
         Task<Response<NoContent>> Delete(int id);
+
+        Task<Response<NoContent>> GetByInformationValue(string value, string personId);
     }
 }

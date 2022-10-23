@@ -91,7 +91,13 @@ namespace DirectoryApp.Services.CrudOperations.Services
 
             return deleteStatus > 0 ? Response<NoContent>.Success(204) : Response<NoContent>.Fail("Contact not found", 404);
 
+        }
 
+        public async Task<Response<NoContent>> GetByInformationValue(string value, string personId)
+        {
+            var contactInformation = await _dbContext.ContactInformation.FirstOrDefaultAsync(x => x.ContactValue.ToLower() == value.ToLower() && x.PersonId.ToString() == personId);
+
+            return contactInformation != null ? Response<NoContent>.Fail("Information already exists", 500) : Response<NoContent>.Success(204);
 
 
         }

@@ -42,6 +42,12 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(ContactInformation informationDto)
         {
+
+            var isExistResponse = await _contactInformationService.GetByInformationValue(informationDto.ContactValue, informationDto.PersonId.ToString());
+            if (!isExistResponse.IsSuccessful)
+            {
+                return CreateActionResultInstance(isExistResponse);
+            }
             var response = await _contactInformationService.Save(informationDto);
 
             return CreateActionResultInstance(response);
