@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Shared\DirectoryApp.Shared\DirectoryApp.Shared.csproj" />
+    <ProjectReference Include="..\DirectoryApp.Services.Report\DirectoryApp.Services.Report.csproj" />
   </ItemGroup>
 
 </Project>
