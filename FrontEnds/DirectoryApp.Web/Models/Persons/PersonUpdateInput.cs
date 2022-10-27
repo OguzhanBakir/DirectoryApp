@@ -1,4 +1,4 @@
-﻿using DirectoryApp.Web.Dtos;
+﻿using DirectoryApp.Core.Entities;
 using DirectoryApp.Web.Models.ContactInformations;
 using System;
 using System.Collections.Generic;
@@ -32,7 +32,7 @@ namespace DirectoryApp.Web.Models.Persons
         public string Company { get; set; }
         public Guid PersonId { get; set; }
 
-        public List<ContactInformationViewModel> ContactInformations { get; set; }
+        public List<ContactInformation> ContactInformations { get; set; } = new List<ContactInformation>();
 
 
     }

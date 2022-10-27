@@ -1,5 +1,4 @@
 using ClosedXML.Excel;
-using DirectoryApp.Services.Report.Shared;
 using DirectoryApp.Shared.Dtos;
 using DirectoryApp.Workers.FileCreate.Models;
 using DirectoryApp.Workers.FileCreate.Services;
@@ -21,13 +20,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using DirectoryApp.Workers.FileCreate.Definitions;
 using System.Net.Http.Json;
+using DirectoryApp.Core.Utilities.RabbitMQ;
 
 namespace DirectoryApp.Workers.FileCreate
 {
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly RabbitMQClientService _rabbitMQClientService;
+        private readonly Services.RabbitMQClientService _rabbitMQClientService;
         private readonly IServiceProvider _serviceProvider;
         private IModel _channel;
         private readonly IConfiguration _configuration;
@@ -39,7 +39,7 @@ namespace DirectoryApp.Workers.FileCreate
 
 
 
-        public Worker(ILogger<Worker> logger, RabbitMQClientService rabbitMQClientService, IServiceProvider serviceProvider, IConfiguration configuration, HttpClient client,ConnectionFactory connectionFactory)
+        public Worker(ILogger<Worker> logger, Services.RabbitMQClientService rabbitMQClientService, IServiceProvider serviceProvider, IConfiguration configuration, HttpClient client,ConnectionFactory connectionFactory)
         {
             _logger = logger;
             _rabbitMQClientService = rabbitMQClientService;
@@ -69,7 +69,7 @@ namespace DirectoryApp.Workers.FileCreate
 
             try
             {
-                _channel.BasicConsume(RabbitMQClientService.QueueName, false, consumer);
+                _channel.BasicConsume(Services.RabbitMQClientService.QueueName, false, consumer);
                 
             }
 
@@ -78,9 +78,9 @@ namespace DirectoryApp.Workers.FileCreate
                 _connection = _connectionFactory.CreateConnection();
                 _channel = _connection.CreateModel();
                 _channel.ExchangeDeclare("ExcelDirectExchange", type: "direct", true, false);
-                _channel.QueueDeclare(RabbitMQClientService.QueueName, true, false, false, null);
-                _channel.QueueBind(exchange: "ExcelDirectExchange", queue: RabbitMQClientService.QueueName, routingKey: "person-excel-route-file");
-                _channel.BasicConsume(RabbitMQClientService.QueueName, false, consumer);
+                _channel.QueueDeclare(Services.RabbitMQClientService.QueueName, true, false, false, null);
+                _channel.QueueBind(exchange: "ExcelDirectExchange", queue: Services.RabbitMQClientService.QueueName, routingKey: "person-excel-route-file");
+                _channel.BasicConsume(Services.RabbitMQClientService.QueueName, false, consumer);
             }
 
 

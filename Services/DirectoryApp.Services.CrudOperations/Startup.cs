@@ -1,5 +1,11 @@
-using DirectoryApp.Services.CrudOperations.Data;
-using DirectoryApp.Services.CrudOperations.Services;
+using DirectoryApp.BLL.Abstract;
+using DirectoryApp.BLL.Concrete;
+using DirectoryApp.BLL.ValidationRules.FluentValidation;
+using DirectoryApp.Core.Entities;
+using DirectoryApp.DAL.Abstract;
+using DirectoryApp.DAL.Concrete.EntityFramework.Context;
+using DirectoryApp.DAL.Concrete.Managers;
+using FluentValidation;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -32,13 +38,15 @@ namespace DirectoryApp.Services.CrudOperations
         {
 
             services.AddHttpContextAccessor();
-            services.AddScoped<IPersonService, PersonService>();
-            services.AddScoped<IContactInformationService, ContactInformationService>();
-            services.AddControllers()
-           .AddFluentValidation(s =>
-           {
-               s.RegisterValidatorsFromAssemblyContaining<Startup>();
-           });
+
+
+
+
+
+
+
+            services.AddControllers().AddFluentValidation();
+           
 
             services.AddSwaggerGen(c => {
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
@@ -57,6 +65,15 @@ namespace DirectoryApp.Services.CrudOperations
             services.AddDbContext<PersonContext>(
                 opts => opts.UseNpgsql(connectionString)
             );
+
+            services.AddTransient<IPersonService,PersonManager>();
+            services.AddTransient<IPersonDAL, EfPersonDAL>();
+
+            services.AddTransient<IContactInformationService, ContactInformationManager>();
+            services.AddTransient<IContactInformationDAL, EfContactInformationDAL>();
+
+            services.AddTransient<IValidator<Person>, PersonValidator>();
+            services.AddTransient<IValidator<ContactInformation>, ContactInformationValidator>();
 
            
         }

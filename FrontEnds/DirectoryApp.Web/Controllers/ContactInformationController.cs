@@ -1,22 +1,26 @@
-﻿using DirectoryApp.Web.Models.ContactInformations;
+﻿using DirectoryApp.Web.Definitions;
+using DirectoryApp.Web.Models.ContactInformations;
 using DirectoryApp.Web.Services.Interfaces;
 using DirectoryApp.Web.Utilities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Http;
+using System.Net.Http.Json;
 using System.Threading.Tasks;
 
 namespace DirectoryApp.Web.Controllers
 {
     public class ContactInformationController : Controller
     {
-        private readonly IContactInformationService _contactInformationService;
+        private readonly HttpClient _client;
 
-        public ContactInformationController(IContactInformationService contactInformationService)
+
+        public ContactInformationController(HttpClient client)
         {
-            _contactInformationService = contactInformationService;
+            _client = client;
+
+
         }
-
-
 
         public async Task<IActionResult> Add(int informationTypeId, string personId)
         {
@@ -47,6 +51,7 @@ namespace DirectoryApp.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(ContactInformationAddViewModel model)
         {
+
             model.Cities = Cities.GetCitiesList();
             if (model.InformationTypeId == 1)
             {
@@ -62,14 +67,16 @@ namespace DirectoryApp.Web.Controllers
                 }
             }
 
+            var response = await _client.PostAsJsonAsync($"{StaticDefinition.apiBaseUrl}/api/ContactInformation/Create", model);
 
-            await _contactInformationService.AddContactInformationAsync(model);
+            //await _contactInformationService.AddContactInformationAsync(model);
             return RedirectToAction("Update", "Home", new { id = model.PersonId });
         }
 
         public async Task<IActionResult> Remove(int id,string personId)
         {
-            await _contactInformationService.DeleteContactInformationAsync(id);
+            var response = await _client.DeleteAsync($"{StaticDefinition.apiBaseUrl}/api/ContactInformation/Delete/{id}");
+
             return RedirectToAction("Update", "Home", new { id = personId });
         }
 

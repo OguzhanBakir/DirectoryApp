@@ -1,15 +1,13 @@
-using DirectoryApp.Web.Services;
-using DirectoryApp.Web.Services.Interfaces;
+using DirectoryApp.BLL.Abstract;
+using DirectoryApp.BLL.Concrete;
+using DirectoryApp.DAL.Abstract;
+using DirectoryApp.DAL.Concrete.Managers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace DirectoryApp.Web
 {
@@ -33,9 +31,19 @@ namespace DirectoryApp.Web
 
             services.AddHttpClient();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            services.AddTransient<IPersonService, PersonService>();
-            services.AddTransient<IContactInformationService, ContactInformationService>();
+
+           
+
             services.AddControllersWithViews();
+
+
+            //services.AddTransient<IPersonService, PersonManager>();
+            //services.AddTransient<IPersonDAL, EfPersonDAL>();
+            //services.AddTransient<IReportResultService, ReportResultManager>();
+            //services.AddTransient<IReportResultDAL, EfReportResultDAL>();
+            //services.AddTransient<IContactInformationService, ContactInformationManager>();
+            //services.AddTransient<IContactInformationDAL, EfContactInformationDAL>();
+
 
 
         }

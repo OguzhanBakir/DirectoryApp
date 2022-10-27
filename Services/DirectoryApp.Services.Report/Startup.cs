@@ -1,5 +1,10 @@
-using DirectoryApp.Services.Report.Data;
-using DirectoryApp.Services.Report.Services;
+using DirectoryApp.BLL.Abstract;
+using DirectoryApp.BLL.Concrete;
+using DirectoryApp.Core.Utilities.RabbitMQ;
+using DirectoryApp.DAL.Abstract;
+using DirectoryApp.DAL.Concrete.EntityFramework.Context;
+using DirectoryApp.DAL.Concrete.Managers;
+using DirectoryApp.Services.Report.Injector;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -34,10 +39,31 @@ namespace DirectoryApp.Services.Report
             services.AddSingleton<RabbitMQPublisher>();
             services.AddSingleton<RabbitMQClientService>();
             services.AddHttpContextAccessor();
-            services.AddScoped<IReportResultService, ReportResultService>();
+
+            //services.AddTransient<IPersonService, PersonManager>();
+            //services.AddTransient<IPersonDAL, EfPersonDAL>();
+            //services.AddTransient<IReportResultService, ReportResultManager>();
+            //services.AddTransient<IReportResultDAL, EfReportResultDAL>();
+            //services.AddTransient<IContactInformationService, ContactInformationManager>();
+            //services.AddTransient<IContactInformationDAL, EfContactInformationDAL>();
 
 
             services.AddControllers();
+
+
+            var connectionString = Configuration["DbContextSettings:ConnectionString"];
+            services.AddDbContext<ReportContext>(
+                opts => opts.UseNpgsql(connectionString)
+            );
+
+            //services.Register();
+            //services.AddTransient<IPersonService, PersonManager>();
+            //services.AddTransient<IPersonDAL, EfPersonDAL>();
+            services.AddTransient<IReportResultService, ReportResultManager>();
+            services.AddTransient<IReportResultDAL, EfReportResultDAL>();
+            //services.AddTransient<IContactInformationService, ContactInformationManager>();
+            //services.AddTransient<IContactInformationDAL, EfContactInformationDAL>();
+
 
             services.AddSwaggerGen(c => {
                 c.ResolveConflictingActions(apiDescriptions => apiDescriptions.First());
@@ -47,10 +73,6 @@ namespace DirectoryApp.Services.Report
             });
 
 
-            var connectionString = Configuration["DbContextSettings:ConnectionString"];
-            services.AddDbContext<ReportContext>(
-                opts => opts.UseNpgsql(connectionString)
-            );
 
 
 
@@ -71,6 +93,8 @@ namespace DirectoryApp.Services.Report
       
 
             app.UseRouting();
+
+
 
             app.UseAuthorization();
 

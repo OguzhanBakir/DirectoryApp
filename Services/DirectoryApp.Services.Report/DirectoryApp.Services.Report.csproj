@@ -24,6 +24,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\BLL\DirectoryApp.BLL\DirectoryApp.BLL.csproj" />
+    <ProjectReference Include="..\..\DAL\DirectoryApp.DAL\DirectoryApp.DAL.csproj" />
     <ProjectReference Include="..\..\Shared\DirectoryApp.Shared\DirectoryApp.Shared.csproj" />
   </ItemGroup>
 

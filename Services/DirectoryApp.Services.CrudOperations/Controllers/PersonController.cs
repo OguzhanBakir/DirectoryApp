@@ -1,13 +1,12 @@
-﻿using DirectoryApp.Services.CrudOperations.Data;
-using DirectoryApp.Services.CrudOperations.Models;
-using DirectoryApp.Services.CrudOperations.Services;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DirectoryApp.Shared.ControllerBases;
+using DirectoryApp.BLL.Abstract;
+using DirectoryApp.Core.Entities;
 
 namespace DirectoryApp.Services.CrudOperations.Controllers
 {
@@ -35,6 +34,7 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
 
         
         [HttpGet("{id}")]
+
         public async Task<IActionResult> GetPersonById(string id)
         {
             var response = await _personService.GetPersonById(id);
@@ -46,7 +46,7 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(Person personDto)
         {
-            var response = await _personService.Save(personDto);
+            var response = await _personService.Add(personDto);
 
             return CreateActionResultInstance(response);
         }
@@ -58,12 +58,14 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
             var response = await _personService.Update(personDto);
 
             return CreateActionResultInstance(response);
+
         }
 
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
+
             var response = await _personService.Delete(id);
 
             return CreateActionResultInstance(response);

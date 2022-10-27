@@ -1,5 +1,5 @@
-﻿using DirectoryApp.Services.CrudOperations.Models;
-using DirectoryApp.Services.CrudOperations.Services;
+﻿using DirectoryApp.BLL.Abstract;
+using DirectoryApp.Core.Entities;
 using DirectoryApp.Shared.ControllerBases;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -30,10 +30,11 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetContactInformationByPersonId(Guid id)
+        [HttpGet]
+        [Route("GetContactInformationListByPersonId/{id}")]
+        public async Task<IActionResult> GetContactInformationListByPersonId(Guid id)
         {
-            var response = await _contactInformationService.GetContactInformationByPersonId(id);
+            var response = await _contactInformationService.GetContactInformationListByPersonId(id);
 
             return CreateActionResultInstance(response);
         }
@@ -48,7 +49,7 @@ namespace DirectoryApp.Services.CrudOperations.Controllers
             {
                 return CreateActionResultInstance(isExistResponse);
             }
-            var response = await _contactInformationService.Save(informationDto);
+            var response = await _contactInformationService.Add(informationDto);
 
             return CreateActionResultInstance(response);
         }

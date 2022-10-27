@@ -1,14 +1,7 @@
-﻿using DirectoryApp.Services.Report.Data;
-using DirectoryApp.Services.Report.Models;
-using DirectoryApp.Services.Report.Services;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 using DirectoryApp.Shared.ControllerBases;
-
+using DirectoryApp.BLL.Abstract;
 
 namespace DirectoryApp.Services.Report.Controllers
 {
@@ -28,7 +21,7 @@ namespace DirectoryApp.Services.Report.Controllers
 
         [HttpGet]
         [Route("GetAllReport")]
-        public async Task<IActionResult> GetAll()
+        public async Task<IActionResult> GetAllReport()
         {
             var reportResult = await _reportResultService.GetAllAsync();
 

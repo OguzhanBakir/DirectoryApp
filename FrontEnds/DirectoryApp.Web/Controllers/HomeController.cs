@@ -1,4 +1,5 @@
-﻿using DirectoryApp.Shared.Dtos;
+﻿using DirectoryApp.Core.Entities;
+using DirectoryApp.Shared.Dtos;
 using DirectoryApp.Web.Definitions;
 using DirectoryApp.Web.Models;
 using DirectoryApp.Web.Models.Persons;
@@ -15,24 +16,20 @@ using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
+using ReportResult = DirectoryApp.Core.Entities.ReportResult;
 
 namespace DirectoryApp.Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly IPersonService _personService;
         private HttpClient _client;
 
 
-        public HomeController(IPersonService personService, HttpClient client)
+        public HomeController(HttpClient client)
         {
-            _personService = personService;
             _client = client;
 
-
         }
-
-
 
         public async Task<IActionResult> Reports()
         {
@@ -47,9 +44,9 @@ namespace DirectoryApp.Web.Controllers
 
                 lstInformation = responseReportList.Data;
 
-              
 
-                
+
+
 
 
             }
@@ -69,7 +66,17 @@ namespace DirectoryApp.Web.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _personService.GetAllPersonAsync());
+
+            var response = await _client.GetAsync($"{StaticDefinition.apiBaseUrl}/api/Person");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var responseSuccess = await response.Content.ReadFromJsonAsync<Response<List<PersonViewModel>>>();
+                return View(responseSuccess.Data);
+            }
+
+
+            return View();
         }
 
 
@@ -90,7 +97,7 @@ namespace DirectoryApp.Web.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-       
+
 
         }
 
@@ -115,65 +122,91 @@ namespace DirectoryApp.Web.Controllers
             {
                 return View();
             }
+            else
+            {
+                var response = await _client.PostAsJsonAsync<PersonCreateInput>($"{StaticDefinition.apiBaseUrl}/api/Person", personInput);
 
-            await _personService.CreatePersonAsync(personInput);
+                if (response.IsSuccessStatusCode)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return View();
+                }
+            }
 
-            return RedirectToAction(nameof(Index));
+
+
         }
 
 
 
         public async Task<IActionResult> Update(string id)
         {
-            var person = await _personService.GetPersonById(id);
-
-
-
-            if (person == null)
+            var response = await _client.GetAsync($"{StaticDefinition.apiBaseUrl}/api/Person/{id}");
+            if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction(nameof(Index));
-            }
+                var person = await response.Content.ReadFromJsonAsync<Response<Person>>();
+                if (person.Data != null)
+                {
+                    PersonUpdateInput personUpdateInput = new()
+                    {
+                        PersonId = person.Data.PersonId,
+                        Company = person.Data.Company,
+                        FirstName = person.Data.FirstName,
+                        LastName = person.Data.LastName,
+                        ContactInformations = person.Data.ContactInformations
+                    };
 
+                    return View(personUpdateInput);
+                }
+                else
+                {
+                    return View();
+                }
+            }
             else
             {
-
-                PersonUpdateInput personUpdateInput = new()
-                {
-                    PersonId = person.PersonId,
-                    Company = person.Company,
-                    FirstName = person.FirstName,
-                    LastName = person.LastName,
-                    ContactInformations = person.ContactInformation
-                };
-
-
-                return View(personUpdateInput);
+                return View();
             }
+
+
+
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Update(PersonUpdateInput personUpdateInput)
+        public async Task<IActionResult> Update(PersonUpdateInput model)
         {
-            string personId = personUpdateInput.PersonId.ToString();
-
-            var person = await _personService.GetPersonById(personId);
-
-
-            if (!ModelState.IsValid)
+            var response = await _client.GetAsync($"{StaticDefinition.apiBaseUrl}/api/Person/{model.PersonId}");
+            if (response.IsSuccessStatusCode)
             {
-                return View();
-            }
-            await _personService.UpdatePersonAsync(personUpdateInput);
-            personUpdateInput.ContactInformations = person.ContactInformation;
+                var person = await response.Content.ReadFromJsonAsync<Response<Person>>();
+                
 
-            return RedirectToAction(nameof(Index));
+                var updateResponse = await _client.PutAsJsonAsync<PersonUpdateInput>($"{StaticDefinition.apiBaseUrl}/api/Person", model);
+
+                model.ContactInformations = person.Data.ContactInformations;
+                if (updateResponse.IsSuccessStatusCode)
+                {
+                    return View(model);
+                }
+
+            }
+
+            return View(model);
+
+
+
+
         }
 
 
         public async Task<IActionResult> Delete(string id)
         {
-            await _personService.DeletePersonAsync(id);
+            var response = await _client.DeleteAsync($"{StaticDefinition.apiBaseUrl}/api/Person/{id}");
+
 
             return RedirectToAction(nameof(Index));
         }

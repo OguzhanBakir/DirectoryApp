@@ -1,4 +1,4 @@
-﻿using DirectoryApp.Services.Report.Data;
+﻿using DirectoryApp.DAL.Concrete.EntityFramework.Context;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
